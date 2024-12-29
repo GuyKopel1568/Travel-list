@@ -19,11 +19,23 @@ export default function App() {
     setItems(items => items.filter(item => item.id !== id));
   }
 
+  function handleToggleItem(id) {
+    setItems(items =>
+      items.map(
+        item => (item.id === id ? { ...item, packed: !item.packed } : item)
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItem={handleAddItem} />
-      <PackingList items={items} onDeleteItem={handleDelete} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDelete}
+        onToggleItems={handleToggleItem}
+      />
       <Stats />
     </div>
   );
@@ -74,31 +86,30 @@ export default function App() {
     );
   }
 
-  function PackingList({ items, onDeleteItem }) {
+  function PackingList({ items, onDeleteItem, onToggleItems }) {
     return (
       <ul className="list">
         {items.map(item =>
-          <Item onDeleteItem={onDeleteItem} key={item.id} item={item} />
+          <Item
+            onDeleteItem={onDeleteItem}
+            key={item.id}
+            item={item}
+            onToggleItems={onToggleItems}
+          />
         )}
       </ul>
     );
   }
 
-  function Item({ item, onDeleteItem }) {
-    const [isChecked, setIsChecked] = React.useState(item.packed);
-
-    function handleCheckboxChange() {
-      setIsChecked(!isChecked);
-    }
-
+  function Item({ item, onDeleteItem, onToggleItems }) {
     return (
       <div>
         <li key={item.id}>
-          <span style={isChecked ? { textDecoration: "line-through" } : {}}>
+          <span style={item.packed ? { textDecoration: "line-through" } : {}}>
             <input
               type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
+              checked={item.packed}
+              onChange={() => onToggleItems(item.id)}
             />
             {item.quantity}x {item.description}
           </span>
