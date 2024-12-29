@@ -15,11 +15,15 @@ export default function App() {
     setItems(items => [...items, item]);
   }
 
+  function handleDelete(id) {
+    setItems(items => items.filter(item => item.id !== id));
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItem={handleAddItem} />
-      <PackingList items={items} />
+      <PackingList items={items} onDeleteItem={handleDelete} />
       <Stats />
     </div>
   );
@@ -70,15 +74,17 @@ export default function App() {
     );
   }
 
-  function PackingList({ items }) {
+  function PackingList({ items, onDeleteItem }) {
     return (
       <ul className="list">
-        {items.map(item => <Item key={item.id} item={item} />)}
+        {items.map(item =>
+          <Item onDeleteItem={onDeleteItem} key={item.id} item={item} />
+        )}
       </ul>
     );
   }
 
-  function Item({ item }) {
+  function Item({ item, onDeleteItem }) {
     const [isChecked, setIsChecked] = React.useState(item.packed);
 
     function handleCheckboxChange() {
@@ -96,7 +102,7 @@ export default function App() {
             />
             {item.quantity}x {item.description}
           </span>
-          <button>❌</button>
+          <button onClick={() => onDeleteItem(item.id)}>❌</button>
         </li>
       </div>
     );
